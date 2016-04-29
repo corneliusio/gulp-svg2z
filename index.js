@@ -25,7 +25,6 @@ module.exports = function(options) {
             }
 
             if (file.isBuffer()) {
-                console.log(settings);
                 file.contents = zlib.deflateSync(file.contents, settings);
                 file.path = file.path + 'z';
                 this.push(file);
