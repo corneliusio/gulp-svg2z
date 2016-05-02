@@ -12,24 +12,21 @@ module.exports = function(options) {
 
     stream._transform = function(file, encoding, next) {
 
-        if (!file.checksum) {
+        if (path.extname(file.path).toLowerCase() !== '.svg') {
+            this.push(file);
+            return next();
+        }
 
-            if (path.extname(file.path).toLowerCase() !== '.svg') {
-                this.push(file);
-                return next();
-            }
+        if (file.isStream()) {
+            this.push(file);
+            return next();
+        }
 
-            if (file.isStream()) {
-                this.push(file);
-                return next();
-            }
-
-            if (file.isBuffer()) {
-                file.contents = zlib.deflateSync(file.contents, settings);
-                file.path = file.path + 'z';
-                this.push(file);
-                return next();
-            }
+        if (file.isBuffer()) {
+            file.contents = zlib.deflateSync(file.contents, settings);
+            file.path = file.path + 'z';
+            this.push(file);
+            return next();
         }
     };
 
