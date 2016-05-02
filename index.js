@@ -6,9 +6,13 @@ var fs = require('fs'),
 module.exports = function(options) {
 
     var stream = new Stream.Transform({objectMode: true}),
-        settings = Object.assign({
+        settings = {
             level: 9
-        }, options);
+        };
+
+    for (var key in options) {
+        settings[key] = options[key];
+    }
 
     stream._transform = function(file, encoding, next) {
 
