@@ -1,36 +1,36 @@
-var fs = require('fs'),
-    path = require('path'),
-    Stream = require('stream'),
-    zlib = require('zlib');
+let path = require('path'),
+    zlib = require('zlib'),
+    TransformStream = require('stream').Transform;
 
-module.exports = function(options) {
+module.exports = (options = {}) => {
 
-    var stream = new Stream.Transform({objectMode: true}),
+    let stream = new TransformStream({objectMode: true}),
         settings = {
             level: 9
         };
 
-    for (var key in options) {
+    Object.keys(options).forEach(key => {
         settings[key] = options[key];
-    }
+    });
 
-    stream._transform = function(file, encoding, next) {
+    stream._transform = (file, encoding, next) => {
 
         if (path.extname(file.path).toLowerCase() !== '.svg') {
-            this.push(file);
-            return next();
+            return next(null, file);
         }
 
         if (file.isStream()) {
-            this.push(file);
-            return next();
+            return next(null, file);
         }
 
         if (file.isBuffer()) {
-            file.contents = zlib.deflateSync(file.contents, settings);
-            file.path = file.path + 'z';
-            this.push(file);
-            return next();
+
+            zlib.gzip(file.contents.toString(), settings, (err, res) => {
+                file.contents = new Buffer(res);
+                file.path += 'z';
+
+                return next(null, file);
+            });
         }
     };
 

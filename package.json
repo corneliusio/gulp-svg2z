@@ -1,6 +1,6 @@
 {
   "name": "gulp-svg2z",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Gzip SVG vector graphics files with Gulp",
   "repository": "corneliusio/gulp-svg2z",
   "bugs": {
